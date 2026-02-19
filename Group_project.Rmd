@@ -10,3 +10,13 @@ Group members' names:
 Ruolin Huang, Hangjun Liu, Weifan Liu
 
 https://github.com/Ruolin030/BIS15L_W2026_Group10
+```{r}
+library("tidyverse")
+library("naniar")
+library("janitor")
+```
+1.load data.
+```{r}
+bird<- read_csv("data/birdtraitdata.csv") %>% clean_names()
+```
+
