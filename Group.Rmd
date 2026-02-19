@@ -1,0 +1,9 @@
+---
+title: "Group_Project"
+author: "Ruolin Huang"
+output: html_document
+---
+Group members' names:
+Ruolin Huang, Hangjun Liu, Weifan Liu
+
+https://github.com/Ruolin030/BIS15L_W2026_Group10
