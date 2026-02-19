@@ -1,7 +1,10 @@
 ---
 title: "Group_Project"
 author: "Ruolin Huang"
-output: html_document
+date: "`r Sys.Date()`"
+output:
+  html_document: 
+    theme: spacelab
 ---
 Group members' names:
 Ruolin Huang, Hangjun Liu, Weifan Liu
