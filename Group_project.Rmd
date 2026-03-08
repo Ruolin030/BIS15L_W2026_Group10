@@ -1,6 +1,6 @@
 ---
 title: "Group_Project"
-author: "Ruolin Huang"
+author: "Ruolin Huang,Weifan Liu"
 date: "`r Sys.Date()`"
 output:
   html_document: 
@@ -14,9 +14,48 @@ https://github.com/Ruolin030/BIS15L_W2026_Group10
 library("tidyverse")
 library("naniar")
 library("janitor")
+library("ggthemes")
+library("RColorBrewer")
+library("paletteer")
+library("ggplot2")
+library("shiny")
 ```
 1.load data.
 ```{r}
-bird<- read_csv("data/birdtraitdata.csv") %>% clean_names()
+gestation<- read_csv("data/Danis and Rokas 2024 Gestation Length/Data_S1.csv") %>% clean_names()
+```
+2. Exploration of the Dataset
+```{r}
+glimpse(gestation)
 ```
 
+```{r}
+summary(gestation)
+```
+
+```{r}
+dim(gestation)
+```
+
+3. Data Integrity and Quality Check
+Before proceeding to analysis, we must ensure there are no hidden missing values or logical errors.
+```{r}
+gestation %>% 
+  tabyl(order)
+```
+
+```{r}
+gestation %>% 
+  miss_var_summary()
+```
+
+```{r}
+names(gestation)
+```
+
+```{r}
+gestation %>% 
+  filter(bodymass == 0 | gestationength == 0 | longevity == 0)
+```
+
+The diagnostic check confirms that the dataset is highly complete, with no missing values (NAs) or illogical zero-entries in the primary variables

@@ -9,9 +9,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Ruolin Huang" />
+<meta name="author" content="Ruolin Huang,Weifan Liu" />
 
-<meta name="date" content="2026-02-18" />
+<meta name="date" content="2026-03-07" />
 
 <title>Group_Project</title>
 
@@ -375,14 +375,120 @@ display: none;
 
 
 <h1 class="title toc-ignore">Group_Project</h1>
-<h4 class="author">Ruolin Huang</h4>
-<h4 class="date">2026-02-18</h4>
+<h4 class="author">Ruolin Huang,Weifan Liu</h4>
+<h4 class="date">2026-03-07</h4>
 
 </div>
 
 
 <p>Group members’ names: Ruolin Huang, Hangjun Liu, Weifan Liu</p>
 <p><a href="https://github.com/Ruolin030/BIS15L_W2026_Group10" class="uri">https://github.com/Ruolin030/BIS15L_W2026_Group10</a></p>
+<pre class="r"><code>library(&quot;tidyverse&quot;)</code></pre>
+<pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.4     ✔ readr     2.1.6
+## ✔ forcats   1.0.1     ✔ stringr   1.6.0
+## ✔ ggplot2   4.0.1     ✔ tibble    3.3.0
+## ✔ lubridate 1.9.4     ✔ tidyr     1.3.2
+## ✔ purrr     1.2.0     
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+<pre class="r"><code>library(&quot;naniar&quot;)
+library(&quot;janitor&quot;)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;janitor&#39;
+## 
+## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     chisq.test, fisher.test</code></pre>
+<pre class="r"><code>library(&quot;ggthemes&quot;)
+library(&quot;RColorBrewer&quot;)
+library(&quot;paletteer&quot;)
+library(&quot;ggplot2&quot;)
+library(&quot;shiny&quot;)</code></pre>
+<p>1.load data.</p>
+<pre class="r"><code>gestation&lt;- read_csv(&quot;data/Danis and Rokas 2024 Gestation Length/Data_S1.csv&quot;) %&gt;% clean_names()</code></pre>
+<pre><code>## Rows: 845 Columns: 5
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (2): Species, Order
+## dbl (3): Bodymass, Longevity, Gestationength
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>Exploration of the Dataset</li>
+</ol>
+<pre class="r"><code>glimpse(gestation)</code></pre>
+<pre><code>## Rows: 845
+## Columns: 5
+## $ species        &lt;chr&gt; &quot;Erethizon dorsatum&quot;, &quot;Coendou prehensilis&quot;, &quot;Dinomys b…
+## $ order          &lt;chr&gt; &quot;Rodentia&quot;, &quot;Rodentia&quot;, &quot;Rodentia&quot;, &quot;Rodentia&quot;, &quot;Rodent…
+## $ bodymass       &lt;dbl&gt; 7419.46, 4116.20, 12500.00, 1220.00, 1539.99, 499.99, 4…
+## $ longevity      &lt;dbl&gt; 18.00, 27.00, 13.00, 19.50, 19.50, 17.50, 10.00, 9.40, …
+## $ gestationength &lt;dbl&gt; 210.99, 203.00, 253.00, 140.00, 134.00, 111.00, 111.00,…</code></pre>
+<pre class="r"><code>summary(gestation)</code></pre>
+<pre><code>##    species             order              bodymass           longevity     
+##  Length:845         Length:845         Min.   :        2   Min.   :  1.17  
+##  Class :character   Class :character   1st Qu.:      138   1st Qu.:  8.60  
+##  Mode  :character   Mode  :character   Median :     3200   Median : 16.00  
+##                                        Mean   :   691437   Mean   : 18.58  
+##                                        3rd Qu.:    35120   3rd Qu.: 24.00  
+##                                        Max.   :154321304   Max.   :200.00  
+##  gestationength
+##  Min.   : 16   
+##  1st Qu.: 40   
+##  Median :120   
+##  Mean   :135   
+##  3rd Qu.:190   
+##  Max.   :517</code></pre>
+<pre class="r"><code>dim(gestation)</code></pre>
+<pre><code>## [1] 845   5</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>Data Integrity and Quality Check Before proceeding to analysis, we
+must ensure there are no hidden missing values or logical errors.</li>
+</ol>
+<pre class="r"><code>gestation %&gt;% 
+  tabyl(order)</code></pre>
+<pre><code>##               order   n     percent
+##        Afrosoricida   6 0.007100592
+##        Artiodactyla 156 0.184615385
+##           Carnivora 121 0.143195266
+##             Cetacea  44 0.052071006
+##           Cingulata   6 0.007100592
+##        Eulipotyphla  35 0.041420118
+##          Lagomorpha  19 0.022485207
+##   New_World_monkeys  40 0.047337278
+##   Old_World_monkeys  53 0.062721893
+##      Perissodactyla  15 0.017751479
+##              Pilosa   8 0.009467456
+##           Pinnipeds  26 0.030769231
+##          Prosimians  35 0.041420118
+##            Rodentia 220 0.260355030
+##     Yangochiroptera  33 0.039053254
+##  Yinpterochiroptera  28 0.033136095</code></pre>
+<pre class="r"><code>gestation %&gt;% 
+  miss_var_summary()</code></pre>
+<pre><code>## # A tibble: 5 × 3
+##   variable       n_miss pct_miss
+##   &lt;chr&gt;           &lt;int&gt;    &lt;num&gt;
+## 1 species             0        0
+## 2 order               0        0
+## 3 bodymass            0        0
+## 4 longevity           0        0
+## 5 gestationength      0        0</code></pre>
+<pre class="r"><code>names(gestation)</code></pre>
+<pre><code>## [1] &quot;species&quot;        &quot;order&quot;          &quot;bodymass&quot;       &quot;longevity&quot;     
+## [5] &quot;gestationength&quot;</code></pre>
+<pre class="r"><code>gestation %&gt;% 
+  filter(bodymass == 0 | gestationength == 0 | longevity == 0)</code></pre>
+<pre><code>## # A tibble: 0 × 5
+## # ℹ 5 variables: species &lt;chr&gt;, order &lt;chr&gt;, bodymass &lt;dbl&gt;, longevity &lt;dbl&gt;,
+## #   gestationength &lt;dbl&gt;</code></pre>
+<p>The diagnostic check confirms that the dataset is highly complete,
+with no missing values (NAs) or illogical zero-entries in the primary
+variables</p>
 
 
 
