@@ -20,3 +20,76 @@ library("janitor")
 bird<- read_csv("data/birdtraitdata.csv") %>% clean_names()
 ```
 
+```{r}
+library(shiny)
+library(ggplot2) 
+
+ui <- fluidPage(
+  titlePanel("Mammalian Gestation Predictor"),
+  
+  sidebarLayout(
+    sidebarPanel(
+      helpText("Adjust parameters to predict gestation length."),
+      
+      sliderInput("mass", "Body Mass (g):", min = 2, max = 2000000, value = 70, step = 1000),
+      sliderInput("longevity", "Lifespan (years):", min = 1, max = 200, value = 20),
+      selectInput("order", "Taxonomic Order:", 
+                  choices = sort(unique(gestation$order))),
+      
+      textOutput("equation")
+    ),
+    
+    mainPanel(
+      wellPanel(
+        textOutput("prediction_text")
+      ),
+      plotOutput("distPlot")
+    )
+  )
+)
+
+server <- function(input, output) {
+  
+  model <- lm(log(gestationength) ~ log(bodymass) + log(longevity), data = gestation)
+  
+  output$equation <- renderText({
+    "log(gestation) = β₀ + β₁(log bodymass) + β₂(log longevity) + order"
+  })
+  
+  output$prediction_text <- renderText({
+    
+    new_data <- data.frame(
+      bodymass = input$mass, 
+      longevity = input$longevity, 
+      order = input$order
+    )
+    
+    pred_log <- predict(model, newdata = new_data)
+    pred_days <- round(exp(pred_log), 1)
+    
+    paste0("Predicted Gestation Length: ", pred_days, " days")
+  })
+  
+  output$distPlot <- renderPlot({
+     #current_prediction_value
+    current_pred_val <- exp(predict(model, data.frame(bodymass=input$mass, # exp() gives the actual predicted gestation length in days
+                                                      longevity=input$longevity, 
+                                                      order=input$order)))
+    
+    gestation %>%
+    ggplot(aes(x = bodymass, y = gestationength, color = order)) +
+      geom_point(alpha = 0.5) +
+      scale_x_log10()+
+      annotate("point", x = input$mass, y = current_pred_val, 
+               color = "black", size = 5, shape = 18) +
+      labs(title = "Gestation vs Body Mass (Log Scale)",
+           subtitle = "Black diamond indicates your current prediction",
+           x = "Body Mass (g)", y = "Gestation Length (days)") +
+      theme_bw()
+  })
+}
+
+shinyApp(ui = ui, server = server)
+
+```
+
