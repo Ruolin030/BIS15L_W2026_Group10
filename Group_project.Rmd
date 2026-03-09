@@ -279,3 +279,51 @@ shinyApp(ui = ui, server = server)
 
 ```
 
+```{r}
+ui <- pageWithSidebar(
+  
+  headerPanel("Species Finder by Traits"),
+  
+  sidebarPanel(
+    selectInput("order",
+                "Select Order",
+                choices = c("All", sort(unique(gestation$order))),
+                selected = "All"),
+    
+    sliderInput("bodymass",
+                "Body Mass",
+                min = min(gestation$bodymass, na.rm = TRUE),
+                max = max(gestation$bodymass, na.rm = TRUE),
+                value = range(gestation$bodymass, na.rm = TRUE)),
+    
+    sliderInput("longevity",
+                "Longevity",
+                min = min(gestation$longevity, na.rm = TRUE),
+                max = max(gestation$longevity, na.rm = TRUE),
+                value = range(gestation$longevity, na.rm = TRUE)),
+    
+    sliderInput("gestation",
+                "Gestation Length",
+                min = min(gestation$gestationength, na.rm = TRUE),
+                max = max(gestation$gestationength, na.rm = TRUE),
+                value = range(gestation$gestationength, na.rm = TRUE))
+  ),
+  
+  mainPanel(
+    tableOutput("species_table")
+  )
+)
+
+server <- function(input, output, session) {
+  
+filtered_species <- reactive({
+    data <- gestation
+    if(input$order != "All"){data <- data %>% filter(order == input$order)}%>%
+      filter(bodymass >= input$bodymass[1] & bodymass <= input$bodymass[2],
+             longevity >= input$longevity[1] & longevity <= input$longevity[2],
+             gestationength >= input$gestation[1] & gestationength <= input$gestation[2])})
+output$species_table <- renderTable({filtered_species()})}
+
+shinyApp(ui = ui, server = server)
+```
+
