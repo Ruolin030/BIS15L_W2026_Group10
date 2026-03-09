@@ -24,6 +24,9 @@ library("shiny")
 ```{r}
 gestation<- read_csv("data/Danis and Rokas 2024 Gestation Length/Data_S1.csv") %>% clean_names()
 ```
+
+
+
 2. Exploration of the Dataset
 ```{r}
 glimpse(gestation)
@@ -59,12 +62,39 @@ gestation %>%
 ```
 
 The diagnostic check confirms that the dataset is highly complete, with no missing values (NAs) or illogical zero-entries in the primary variables
+
+
+
+
+```{r}
+avg_longevity <- gestation %>%
+  group_by(order) %>%
+  summarise(mean_longevity = mean(longevity, na.rm = TRUE))
+```
+
+```{r}
+avg_longevity %>% 
+  ggplot(aes(x = order, y=mean_longevity))+
+  geom_bar(stat = "identity", fill = "darkblue") +
+  labs(title = "Average Longevity by Mammal Order",
+       x = "order",
+       y = "Average Longevity (years)")+
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+
 ```{r}
 ui <- pageWithSidebar(
   
   headerPanel("Species Finder by Traits"),
   
   sidebarPanel(
+    selectInput("order",
+                "Select Order",
+                choices = c("All", sort(unique(gestation$order))),
+                selected = "All"),
     
     sliderInput("bodymass",
                 "Body Mass",
@@ -92,40 +122,20 @@ ui <- pageWithSidebar(
 
 server <- function(input, output, session) {
   
-  filtered_species <- reactive({
-    
-    gestation %>%
-      filter(
-        bodymass >= input$bodymass[1] & bodymass <= input$bodymass[2],
-        longevity >= input$longevity[1] & longevity <= input$longevity[2],
-        gestationength >= input$gestation[1] & gestationength <= input$gestation[2]
-      )
-    
-  })
-  
-  output$species_table <- renderTable({
-    filtered_species()
-  })
-}
+filtered_species <- reactive({
+    data <- gestation
+    if(input$order != "All"){data <- data %>% filter(order == input$order)}%>%
+      filter(bodymass >= input$bodymass[1] & bodymass <= input$bodymass[2],
+             longevity >= input$longevity[1] & longevity <= input$longevity[2],
+             gestationength >= input$gestation[1] & gestationength <= input$gestation[2])})
+output$species_table <- renderTable({filtered_species()})}
 
 shinyApp(ui = ui, server = server)
 ```
 
 
-
 ```{r}
-avg_longevity <- gestation %>%
-  group_by(order) %>%
-  summarise(mean_longevity = mean(longevity, na.rm = TRUE))
+gestation %>% 
+  arrange(desc(bodymass))
 ```
 
-```{r}
-avg_longevity %>% 
-  ggplot(aes(x = order, y=mean_longevity))+
-  geom_bar(stat = "identity", fill = "darkblue") +
-  labs(title = "Average Longevity by Mammal Order",
-       x = "order",
-       y = "Average Longevity (years)")+
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-```
