@@ -1,0 +1,141 @@
+---
+title: "Group_Project"
+author: "Ruolin Huang,Weifan Liu"
+date: "`r Sys.Date()`"
+output:
+  html_document: 
+    theme: spacelab
+---
+Group members' names:
+Ruolin Huang, Hangjun Liu, Weifan Liu
+
+https://github.com/Ruolin030/BIS15L_W2026_Group10
+```{r}
+library("tidyverse")
+library("naniar")
+library("janitor")
+library("ggthemes")
+library("RColorBrewer")
+library("paletteer")
+library("ggplot2")
+library("shiny")
+```
+1.load data.
+```{r}
+gestation<- read_csv("data/Danis and Rokas 2024 Gestation Length/Data_S1.csv") %>% clean_names()
+```
+
+
+
+2. Exploration of the Dataset
+```{r}
+glimpse(gestation)
+```
+
+```{r}
+summary(gestation)
+```
+
+```{r}
+dim(gestation)
+```
+
+3. Data Integrity and Quality Check
+Before proceeding to analysis, we must ensure there are no hidden missing values or logical errors.
+```{r}
+gestation %>% 
+  tabyl(order)
+```
+
+```{r}
+gestation %>% 
+  miss_var_summary()
+```
+
+```{r}
+names(gestation)
+```
+
+```{r}
+gestation %>% 
+  filter(bodymass == 0 | gestationength == 0 | longevity == 0)
+```
+
+The diagnostic check confirms that the dataset is highly complete, with no missing values (NAs) or illogical zero-entries in the primary variables
+
+
+
+
+```{r}
+avg_longevity <- gestation %>%
+  group_by(order) %>%
+  summarise(mean_longevity = mean(longevity, na.rm = TRUE))
+```
+
+```{r}
+avg_longevity %>% 
+  ggplot(aes(x = order, y=mean_longevity))+
+  geom_bar(stat = "identity", fill = "darkblue") +
+  labs(title = "Average Longevity by Mammal Order",
+       x = "order",
+       y = "Average Longevity (years)")+
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+
+```{r}
+ui <- pageWithSidebar(
+  
+  headerPanel("Species Finder by Traits"),
+  
+  sidebarPanel(
+    selectInput("order",
+                "Select Order",
+                choices = c("All", sort(unique(gestation$order))),
+                selected = "All"),
+    
+    sliderInput("bodymass",
+                "Body Mass",
+                min = min(gestation$bodymass, na.rm = TRUE),
+                max = max(gestation$bodymass, na.rm = TRUE),
+                value = range(gestation$bodymass, na.rm = TRUE)),
+    
+    sliderInput("longevity",
+                "Longevity",
+                min = min(gestation$longevity, na.rm = TRUE),
+                max = max(gestation$longevity, na.rm = TRUE),
+                value = range(gestation$longevity, na.rm = TRUE)),
+    
+    sliderInput("gestation",
+                "Gestation Length",
+                min = min(gestation$gestationength, na.rm = TRUE),
+                max = max(gestation$gestationength, na.rm = TRUE),
+                value = range(gestation$gestationength, na.rm = TRUE))
+  ),
+  
+  mainPanel(
+    tableOutput("species_table")
+  )
+)
+
+server <- function(input, output, session) {
+  
+filtered_species <- reactive({
+    data <- gestation
+    if(input$order != "All"){data <- data %>% filter(order == input$order)}%>%
+      filter(bodymass >= input$bodymass[1] & bodymass <= input$bodymass[2],
+             longevity >= input$longevity[1] & longevity <= input$longevity[2],
+             gestationength >= input$gestation[1] & gestationength <= input$gestation[2])})
+output$species_table <- renderTable({filtered_species()})}
+
+shinyApp(ui = ui, server = server)
+```
+
+
+```{r}
+gestation %>% 
+  arrange(desc(bodymass))
+```
+
