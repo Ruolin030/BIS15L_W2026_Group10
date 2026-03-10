@@ -208,7 +208,6 @@ extreme %>%
 
 ```{r}
 library(shiny)
-library(ggplot2) 
 
 ui <- fluidPage(
   titlePanel("Mammalian Gestation Predictor"),
@@ -217,7 +216,7 @@ ui <- fluidPage(
     sidebarPanel(
       helpText("Adjust parameters to predict gestation length."),
       
-      sliderInput("mass", "Body Mass (g):", min = 2, max = 2000000, value = 70, step = 1000),
+      sliderInput("mass", "Body Mass (g):", min = 2, max = 2000, value = 70, step = 10),
       sliderInput("longevity", "Lifespan (years):", min = 1, max = 200, value = 20),
       selectInput("order", "Taxonomic Order:", 
                   choices = sort(unique(gestation$order))),
@@ -229,7 +228,12 @@ ui <- fluidPage(
       wellPanel(
         textOutput("prediction_text")
       ),
-      plotOutput("distPlot")
+      
+       checkboxInput("show_lm",
+                "show best-fit line(lm)",
+                value=FALSE),
+      
+      plotOutput("distPlot", width="500px", height="400px")
     )
   )
 )
@@ -263,15 +267,20 @@ server <- function(input, output) {
                                                       order=input$order)))
     
     gestation %>%
-    ggplot(aes(x = bodymass, y = gestationength, color = order)) +
-      geom_point(alpha = 0.5) +
+      ggplot(aes(x = bodymass, y = gestationength))+
+      geom_point(alpha = 0.5, aes(color = order))+
       scale_x_log10()+
       annotate("point", x = input$mass, y = current_pred_val, 
                color = "black", size = 5, shape = 18) +
       labs(title = "Gestation vs Body Mass (Log Scale)",
            subtitle = "Black diamond indicates your current prediction",
-           x = "Body Mass (g)", y = "Gestation Length (days)") +
-      theme_bw()
+           x = "Body Mass (g)", y = "Gestation Length (days)")+
+      theme_bw()+
+      if (input$show_lm)
+      geom_smooth(method="lm", se=F, na.rm=T)
+  else
+    NULL
+    
   })
 }
 
