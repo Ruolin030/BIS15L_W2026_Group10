@@ -150,6 +150,25 @@ gestation %>%
        y="log10 Gestation Length(days")
 ```
 
+```{r}
+gestation %>% 
+  filter(order %in% major_orders) %>% 
+  ggplot(aes(x=longevity,
+             y=log10(gestationength),
+             color=order))+
+  geom_point(alpha=0.6,size=1)+
+  facet_wrap(~order,scale="free")+
+  scale_color_manual(values=my_color)+
+  theme_light()+
+  theme(legend.position="none",
+        strip.text=element_text(face="bold",color="black"),
+        strip.background=element_rect(fill="grey90"))+
+  labs(title="Comparing the slopes across major mammalian groups as discussed in the paper",
+       x="Longevity",
+       y="log10 Gestation Length(days")
+```
+
+
 3.4 Life-history strategies （Do long-lived orders, such as primates, spend a higher percentage of their lifespan during pregnancy than those fast-dying rodents?）
 ```{r}
 gestation_investment <- 
