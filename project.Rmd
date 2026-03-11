@@ -244,4 +244,39 @@ shinyApp(ui = ui, server = server)
 summary(model)
 ```
 
+```{r}
+library(ggplot2)
+
+ggplot(gestation, aes(x = bodymass, y = gestationength)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = lm, se = F) +
+  scale_x_log10() +
+  scale_y_log10() +
+  labs(
+    x = "Body Mass (log scale)",
+    y = "Gestation Length (log scale)",
+    title = "Relationship Between Body Mass and Gestation Length"
+  )
+```
+```{r}
+ggplot(gestation, aes(x = bodymass, y = gestationength, color = order)) +
+  geom_point(alpha=0.6) +
+  geom_smooth(method=lm, se=FALSE) +
+  scale_x_log10() +
+  scale_y_log10() +
+  labs(x="Body Mass",
+    y="Gestation Length",
+    title="Body Mass vs Gestation Length Across Mammal Orders")
+```
+```{r}
+ggplot(gestation, aes(x = order, y = gestationength)) +
+  geom_boxplot() +
+  scale_y_log10() +
+  theme(axis.text.x = element_text(angle=45, hjust=1)) +
+  labs(
+    x="Mammalian Order",
+    y="Gestation Length",
+    title="Variation in Gestation Length Across Mammal Orders"
+  )
+```
 
