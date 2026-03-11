@@ -8,6 +8,8 @@ output:
 ---
 Group members' names:
 Ruolin Huang, Hangjun Liu, Weifan Liu
+#DATA:
+For this porject.We use the data from Thodoris Danis and Antonis Rokas' research.FROM:Danis T, Rokas A.2024 The evolution of gestation length in eutherian mammals.Proc.R.Soc.B291:20241412.Links:https://doi.org/10.1098/rspb.2024.1412
 
 https://github.com/Ruolin030/BIS15L_W2026_Group10
 ```{r}
@@ -76,7 +78,7 @@ avg_longevity %>%
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
-
+#Weifan Liu
 3. Briefly understand the datasets.
 3.1 Distrubution of order
 ```{r}
@@ -224,7 +226,7 @@ extreme %>%
        y="Gestation Length (Days)",
        fill="Group")
 ```
-
+#Ruolin Huang
 ```{r}
 library(shiny)
 
@@ -306,7 +308,7 @@ server <- function(input, output) {
 shinyApp(ui = ui, server = server)
 
 ```
-
+#LHJ
 ```{r}
 ui <- pageWithSidebar(
   
