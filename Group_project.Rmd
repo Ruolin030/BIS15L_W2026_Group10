@@ -226,6 +226,95 @@ extreme %>%
        y="Gestation Length (Days)",
        fill="Group")
 ```
+#LHJ
+```{r}
+library(shiny)
+library(tidyverse)
+
+ui <- fluidPage(
+  titlePanel("Mammalian Gestation Predictor"),
+  
+  sidebarLayout(
+    sidebarPanel(
+      helpText("Adjust parameters to predict gestation length."),
+      
+      sliderInput("mass", "Body Mass (g):", min = 2, max = 20000, value = 10, step = 100),
+      sliderInput("longevity", "Lifespan (years):", min = 1, max = 200, value = 20),
+      
+      textOutput("equation")
+    ),
+    
+    mainPanel(
+      wellPanel(
+        textOutput("prediction_text")
+      ),
+      
+      checkboxInput("show_lm",
+                    "Show best-fit line (lm)",
+                    value = FALSE),
+      
+      plotOutput("distPlot", width = "500px", height = "400px")
+    )
+  )
+)
+
+server <- function(input, output) {
+  
+  model <- lm(log(gestationength) ~ log(bodymass) + log(longevity),
+              data = gestation)
+  
+  output$equation <- renderText({
+    "log(gestation) = β0 + β1 log(bodymass) + β2 log(longevity)"
+  })
+  
+  output$prediction_text <- renderText({
+    
+    new_data <- data.frame(
+      bodymass = input$mass,
+      longevity = input$longevity
+    )
+    
+    pred_log <- predict(model, newdata = new_data)
+    pred_days <- round(exp(pred_log), 1)
+    
+    paste0("Predicted Gestation Length: ", pred_days, " days")
+  })
+  
+  output$distPlot <- renderPlot({
+    
+    current_pred_val <- exp(
+      predict(model,
+              data.frame(bodymass = input$mass,
+                         longevity = input$longevity))
+    )
+    
+    p <- gestation %>%
+      ggplot(aes(x = bodymass, y = gestationength)) +
+      geom_point(alpha = 0.5, aes(color = order)) +
+      scale_x_log10() +
+      annotate("point",
+               x = input$mass,
+               y = current_pred_val,
+               color = "black",
+               size = 5,
+               shape = 18) +
+      labs(title = "Gestation vs Body Mass (Log Scale)",
+           subtitle = "Black diamond indicates your current prediction",
+           x = "log Body Mass+log lifespan",
+           y = "Gestation Length") +
+      theme_bw()
+    
+    if (input$show_lm) {
+      p + geom_smooth(method = "lm", se = FALSE, na.rm = TRUE)
+    } else {
+      p
+    }
+    
+  })
+}
+
+shinyApp(ui = ui, server = server)
+```
 #Ruolin Huang
 ```{r}
 library(shiny)
@@ -356,4 +445,110 @@ output$species_table <- renderTable({filtered_species()})}
 
 shinyApp(ui = ui, server = server)
 ```
+```{r}
+library(shiny)
+library(tidyverse)
+
+
+ui <- fluidPage(
+  titlePanel("Mammalian Gestation Predictor"),
+  
+  sidebarLayout(
+    sidebarPanel(
+      helpText("Adjust parameters to predict gestation length."),
+      
+      sliderInput("mass", "Body Mass (g):",
+                  min = 2, max = 20000, value = 1000, step = 10),
+      
+      sliderInput("longevity", "Lifespan (years):",
+                  min = 1, max = 200, value = 20),
+      
+      selectInput("order_select",
+                  "Select Mammal Order:",
+                  choices = c("All", sort(unique(gestation$Order))),
+                  selected = "All"),
+      
+      textOutput("equation")
+    ),
+    
+    mainPanel(
+      wellPanel(
+        textOutput("prediction_text")
+      ),
+      
+      checkboxInput("show_lm",
+                    "Show best-fit line (lm)",
+                    value = FALSE),
+      
+      plotOutput("distPlot", width = "500px", height = "400px")
+    )
+  )
+)
+
+server <- function(input, output) {
+  
+  model <- lm(log(Gestationength) ~ log(Bodymass) + log(Longevity),
+              data = gestation)
+  
+  output$equation <- renderText({
+    "log(gestation) = β0 + β1 log(bodymass) + β2 log(longevity)"
+  })
+  
+  output$prediction_text <- renderText({
+    
+    new_data <- data.frame(
+      Bodymass = input$mass,
+      Longevity = input$longevity
+    )
+    
+    pred_log <- predict(model, newdata = new_data)
+    pred_days <- round(exp(pred_log), 1)
+    
+    paste0("Predicted Gestation Length: ", pred_days, " days")
+  })
+  
+  output$distPlot <- renderPlot({
+    
+    current_pred_val <- exp(
+      predict(model,
+              data.frame(Bodymass = input$mass,
+                         Longevity = input$longevity))
+    )
+    
+    # filter dataset by order selection
+    filtered_data <- gestation
+    
+    if (input$order_select != "All") {
+      filtered_data <- gestation %>%
+        filter(Order == input$order_select)
+    }
+    
+    p <- filtered_data %>%
+      ggplot(aes(x = Bodymass, y = Gestationength)) +
+      geom_point(alpha = 0.5, aes(color = Order)) +
+      scale_x_log10() +
+      annotate("point",
+               x = input$mass,
+               y = current_pred_val,
+               color = "black",
+               size = 5,
+               shape = 18) +
+      labs(title = "Gestation vs Body Mass (Log Scale)",
+           subtitle = "Black diamond indicates your current prediction",
+           x = "Body Mass (log scale)",
+           y = "Gestation Length") +
+      theme_bw()
+    
+    if (input$show_lm) {
+      p + geom_smooth(method = "lm", se = FALSE)
+    } else {
+      p
+    }
+    
+  })
+}
+
+shinyApp(ui = ui, server = server)
+```
+
 
