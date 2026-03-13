@@ -9,7 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Ruolin Huang,Weifan Liu" />
+<meta name="author" content="Ruolin Huang,Weifan Liu, Hangjun Liu" />
 
 <meta name="date" content="2026-03-12" />
 
@@ -375,7 +375,7 @@ display: none;
 
 
 <h1 class="title toc-ignore">Group_Project</h1>
-<h4 class="author">Ruolin Huang,Weifan Liu</h4>
+<h4 class="author">Ruolin Huang,Weifan Liu, Hangjun Liu</h4>
 <h4 class="date">2026-03-12</h4>
 
 </div>
@@ -701,7 +701,6 @@ server &lt;- function(input, output) {
     if (input$show_lm) {p + geom_smooth(method = &quot;lm&quot;, se = FALSE)} else {
       p }})}
 shinyApp(ui = ui, server = server)</code></pre>
-<div style="width: 100% ; height: 400px ; text-align: center; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;" class="muted well">Shiny applications not supported in static R Markdown documents</div>
 <p>#Ruolin Huang</p>
 <pre class="r"><code>library(shiny)
 
@@ -781,7 +780,6 @@ server &lt;- function(input, output) {
 }
 
 shinyApp(ui = ui, server = server)</code></pre>
-<div style="width: 100% ; height: 400px ; text-align: center; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;" class="muted well">Shiny applications not supported in static R Markdown documents</div>
 <p>#LHJ</p>
 <pre class="r"><code>ui &lt;- pageWithSidebar(
   
@@ -828,7 +826,6 @@ filtered_species &lt;- reactive({
 output$species_table &lt;- renderTable({filtered_species()})}
 
 shinyApp(ui = ui, server = server)</code></pre>
-<div style="width: 100% ; height: 400px ; text-align: center; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;" class="muted well">Shiny applications not supported in static R Markdown documents</div>
 
 
 

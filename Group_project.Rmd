@@ -227,7 +227,7 @@ extreme %>%
        fill="Group")
 ```
 #LHJ
-```{r}
+```{r, eval=F, echo=T}
 library(shiny)
 library(tidyverse)
 
@@ -303,7 +303,7 @@ server <- function(input, output) {
 shinyApp(ui = ui, server = server)
 ```
 #Ruolin Huang
-```{r}
+```{r, eval=F, echo=T}
 library(shiny)
 
 ui <- fluidPage(
@@ -385,7 +385,7 @@ shinyApp(ui = ui, server = server)
 
 ```
 #LHJ
-```{r}
+```{r, eval=F, echo=T}
 ui <- pageWithSidebar(
   
   headerPanel("Species Finder by Traits"),
